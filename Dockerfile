@@ -1,5 +1,4 @@
-# https://github.com/gliderlabs/docker-alpine/issues/362
-FROM alpine:3.6
+FROM alpine:latest
 MAINTAINER lambdalisue <lambdalisue@hashnote.net>
 
 # Install build dependencies and required packages
@@ -18,5 +17,7 @@ RUN apk add --no-cache --virtual build-deps \
  && cd ../ && rm -rf neovim \
  && apk del build-deps
 
+VOLUME /mnt/volume
+WORKDIR /mnt/volume
 ENTRYPOINT ["/usr/local/bin/nvim"]
 CMD []
