@@ -6,7 +6,7 @@ IMAGE := lambdalisue/neovim-ci
 TAG   := latest
 
 ifeq (${TAG},latest)
-    BRANCH := nightly
+    BRANCH := master
 else
     BRANCH := ${TAG}
 endif
@@ -34,3 +34,10 @@ pull: ## Pull a docker image
 push: ## Push a docker image
 	@echo "${GREEN}Pushing a docker image (${IMAGE}:${TAG})${RESET}"
 	@docker push ${IMAGE}:${TAG}
+
+.PHONY: all
+all: ## All
+	@make image && make push
+	@make TAG=v0.2.0 image && make TAG=v0.2.0 push
+	@make TAG=v0.2.1 image && make TAG=v0.2.1 push
+	@make TAG=v0.2.2 image && make TAG=v0.2.2 push
