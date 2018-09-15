@@ -36,7 +36,9 @@ push: ## Push a docker image
 
 .PHONY: all
 all: ## All
-	@make image && make push
-	@make TAG=v0.2.0 image && make TAG=v0.2.0 push
-	@make TAG=v0.2.1 image && make TAG=v0.2.1 push
-	@make TAG=v0.2.2 image && make TAG=v0.2.2 push
+	@make image push
+	@make TAG=v0.2.0 image push
+	@make TAG=v0.2.1 image push
+	@make TAG=v0.2.2 image push
+	@make TAG=v0.3.0 image push
+	@make TAG=v0.3.1 image push
