@@ -6,10 +6,11 @@ IMAGE := lambdalisue/neovim-ci
 TAG   := latest
 
 ifeq (${TAG},latest)
-    OPTIONS :=
+    NEOVIM_VERSION := stable
 else
-    OPTIONS := --branch ${TAG}
+    NEOVIM_VERSION := ${TAG}
 endif
+
 
 # http://postd.cc/auto-documented-makefile/
 .DEFAULT_GOAL := help
@@ -19,28 +20,24 @@ help: ## Show this help
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "${CYAN}%-30s${RESET} %s\n", $$1, $$2}'
 
 .PHONY: image
-
 image: ## Build a docker image
-	@echo "${GREEN}Building a docker image (${IMAGE}:${TAG}) of Neovim ${BRANCH}${RESET}"
-	@docker build --build-arg OPTIONS="${OPTIONS}" -t ${IMAGE}:${TAG} .
+	@docker build \
+	    -t ${IMAGE}:${TAG} \
+	    --build-arg NEOVIM_VERSION="${NEOVIM_VERSION}" \
+	    .
+
+.PHONY: run
+run: ## Build a docker image
+	@docker run  --rm -it ${IMAGE}:${TAG}
 
 .PHONY: pull
 pull: ## Pull a docker image
-	@echo "${GREEN}Pulling a docker image (${IMAGE}:${TAG})${RESET}"
 	@docker pull ${IMAGE}:${TAG}
 
 .PHONY: push
 push: ## Push a docker image
-	@echo "${GREEN}Pushing a docker image (${IMAGE}:${TAG})${RESET}"
 	@docker push ${IMAGE}:${TAG}
 
-.PHONY: all
-all: ## All
-	# @make image push
-	# @make TAG=v0.2.0 image push
-	# @make TAG=v0.2.1 image push
-	# @make TAG=v0.2.2 image push
-	# @make TAG=v0.3.0 image push
-	# @make TAG=v0.3.1 image push
-	@make TAG=v0.4.0 image push
-	@make TAG=v0.4.2 image push
+.PHONY: compensate
+compensate: ## Compensate images in dockerhub
+	@./scripts/list_missing_tags.sh | xargs -I{} -L1 make TAG={} image push
